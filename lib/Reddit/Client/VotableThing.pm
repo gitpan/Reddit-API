@@ -1,17 +1,21 @@
-package Reddit::API::VotableThing;
+package Reddit::Client::VotableThing;
 
-use strict;
-use warnings;
 use Carp;
 
-require Reddit::API::Thing;
+require Reddit::Client::Thing;
 
-use base   qw/Reddit::API::Thing/;
+use base   qw/Reddit::Client::Thing/;
 use fields qw/ups downs likes score/;
+
+# likes may be true, false, or null, based on user vote
+sub set_likes {
+    my ($self, $value) = @_;
+    $self->set_bool('likes', $value) if defined $value;
+}
 
 sub vote {
     my ($self, $direction) = @_;
-    $self->vote($self->{name}, $direction);
+    $self->{_session}->vote($self->{name}, $direction);
 }
 
 sub comment {
@@ -47,7 +51,7 @@ __END__
 
 =head1 NAME
 
-Reddit::API::VotableThing
+Reddit::Client::VotableThing
 
 =head1 DESCRIPTION
 
@@ -70,6 +74,16 @@ commented against, hidden, or saved.
 
 =item unhide()
 
+=back
+
+=head1 INTERNAL ROUTINES
+
+=over
+
+=item set_likes
+
+Conditionally sets the value of "likes" since it may validly be true, false, or
+neither, in the case of no vote being cast.
 
 =back
 
